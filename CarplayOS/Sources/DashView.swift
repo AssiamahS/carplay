@@ -1,4 +1,6 @@
 import SwiftUI
+import EventKit
+import WidgetKit
 
 struct DashView: View {
     let openBrowser: () -> Void
@@ -36,19 +38,22 @@ struct DashView: View {
             Text("Widget pack").font(.headline)
             HStack(spacing: 12) {
                 previewCard { DashClockPreview() }
-                previewCard { DayProgressPreview() }
-                Button {
-                    openBrowser()
-                } label: {
-                    QuickLaunchPreview()
-                        .frame(width: 110, height: 110)
-                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
-                }
-                .buttonStyle(.plain)
+                previewCard { MonthPreview() }
+                previewCard { RemindersPreview() }
             }
-            Text("These are previews — the real widgets live on your home screen and the CarPlay widget screen. On the car display they're glanceable only; tapping the home-screen SlyBrowser widget opens the browser.")
+            Text("These are previews — the real widgets live on your home screen and the CarPlay widget screen. The Reminders widget needs access:")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+            Button {
+                Task {
+                    _ = try? await EKEventStore().requestFullAccessToReminders()
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+            } label: {
+                Label("Allow Reminders", systemImage: "checklist")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
         }
     }
 
@@ -95,35 +100,34 @@ struct DashClockPreview: View {
     }
 }
 
-struct DayProgressPreview: View {
+struct MonthPreview: View {
     var body: some View {
-        VStack(spacing: 6) {
-            Text("\(dayPercent)%")
-                .font(.system(size: 24, weight: .heavy, design: .rounded))
-            Text("of today")
+        VStack(spacing: 4) {
+            Text(Date.now, format: .dateTime.month(.wide))
+                .font(.caption.bold())
+                .foregroundStyle(.orange)
+            Text(Date.now, format: .dateTime.day())
+                .font(.system(size: 26, weight: .heavy, design: .rounded))
+            Text("month grid")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
-            ProgressView(value: Double(dayPercent) / 100)
-                .tint(.orange)
-                .padding(.horizontal, 10)
         }
         .padding(8)
     }
-
-    private var dayPercent: Int {
-        let start = Calendar.current.startOfDay(for: .now)
-        return Int(Date.now.timeIntervalSince(start) / 86400 * 100)
-    }
 }
 
-struct QuickLaunchPreview: View {
+struct RemindersPreview: View {
     var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: "globe")
-                .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(.teal)
-            Text("SlyBrowser")
+        VStack(alignment: .leading, spacing: 4) {
+            Label("Reminders", systemImage: "checklist")
                 .font(.caption2.bold())
+                .foregroundStyle(.orange)
+            ForEach(["Call Lomedico", "Pick up keys"], id: \.self) { item in
+                HStack(spacing: 4) {
+                    Circle().strokeBorder(.orange, lineWidth: 1.5).frame(width: 7, height: 7)
+                    Text(item).font(.system(size: 9, weight: .semibold)).lineLimit(1)
+                }
+            }
         }
         .padding(8)
     }
