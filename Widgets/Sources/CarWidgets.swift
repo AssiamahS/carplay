@@ -1,6 +1,28 @@
 import WidgetKit
 import SwiftUI
 import EventKit
+import AppIntents
+
+struct CompleteReminderIntent: AppIntent {
+    static let title: LocalizedStringResource = "Complete Reminder"
+
+    @Parameter(title: "Reminder ID")
+    var reminderID: String
+
+    init() {}
+    init(reminderID: String) {
+        self.reminderID = reminderID
+    }
+
+    func perform() async throws -> some IntentResult {
+        let store = EKEventStore()
+        if let reminder = store.calendarItem(withIdentifier: reminderID) as? EKReminder {
+            reminder.isCompleted = true
+            try? store.save(reminder, commit: true)
+        }
+        return .result()
+    }
+}
 
 @main
 struct CarWidgetsBundle: WidgetBundle {
@@ -144,15 +166,23 @@ struct MonthCalendarView: View {
 
 // MARK: - Reminders
 
+struct ReminderItem: Hashable {
+    let id: String
+    let title: String
+}
+
 struct RemindersEntry: TimelineEntry {
     let date: Date
-    let items: [String]
+    let items: [ReminderItem]
     let granted: Bool
 }
 
 struct RemindersProvider: TimelineProvider {
     func placeholder(in context: Context) -> RemindersEntry {
-        RemindersEntry(date: .now, items: ["Call Lomedico", "Pick up keys"], granted: true)
+        RemindersEntry(date: .now,
+                       items: [ReminderItem(id: "a", title: "Call Lomedico"),
+                               ReminderItem(id: "b", title: "Pick up keys")],
+                       granted: true)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (RemindersEntry) -> Void) {
@@ -182,7 +212,7 @@ struct RemindersProvider: TimelineProvider {
                     return a < b
                 }
                 .prefix(4)
-                .compactMap(\.title)
+                .map { ReminderItem(id: $0.calendarItemIdentifier, title: $0.title ?? "Reminder") }
             completion(RemindersEntry(date: .now, items: Array(sorted), granted: true))
         }
     }
@@ -223,12 +253,15 @@ struct RemindersView: View {
                     .font(.system(size: 16, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
             } else {
-                ForEach(entry.items.prefix(3), id: \.self) { item in
+                ForEach(entry.items.prefix(3), id: \.id) { item in
                     HStack(spacing: 5) {
-                        Circle()
-                            .strokeBorder(Color.orange, lineWidth: 1.5)
-                            .frame(width: 8, height: 8)
-                        Text(item)
+                        Button(intent: CompleteReminderIntent(reminderID: item.id)) {
+                            Circle()
+                                .strokeBorder(Color.orange, lineWidth: 1.5)
+                                .frame(width: 14, height: 14)
+                        }
+                        .buttonStyle(.plain)
+                        Text(item.title)
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(.white)
                             .lineLimit(1)
