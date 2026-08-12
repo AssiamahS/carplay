@@ -1,0 +1,2 @@
+- global auto-version pre-push hook amends the pushed commit (version bump) but NOT local HEAD → every push diverges local/remote. After pushing: git fetch && git reset --hard origin/main before more edits, else add/add conflict on project.yml.
+- first CI run's testflight job "succeeds" with skipped steps when ASC secrets aren't set yet — check step count, not job conclusion.

@@ -7,7 +7,7 @@ struct CarplayOSApp: App {
     var body: some Scene {
         WindowGroup {
             TabView(selection: $selectedTab) {
-                DashView()
+                DashView(openBrowser: { selectedTab = 1 })
                     .tabItem { Label("Dash", systemImage: "car.rear.road.lane.distant") }
                     .tag(0)
                 BrowserView()
@@ -18,7 +18,7 @@ struct CarplayOSApp: App {
                     .tag(2)
             }
             .onOpenURL { url in
-                if url.host == "browser" || url.scheme == "carplayos" && url.host == nil && url.path.contains("browser") {
+                if url.scheme == "carplayos" {
                     selectedTab = 1
                 }
             }

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct DashView: View {
+    let openBrowser: () -> Void
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -35,8 +37,18 @@ struct DashView: View {
             HStack(spacing: 12) {
                 previewCard { DashClockPreview() }
                 previewCard { DayProgressPreview() }
-                previewCard { QuickLaunchPreview() }
+                Button {
+                    openBrowser()
+                } label: {
+                    QuickLaunchPreview()
+                        .frame(width: 110, height: 110)
+                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+                }
+                .buttonStyle(.plain)
             }
+            Text("These are previews — the real widgets live on your home screen and the CarPlay widget screen. On the car display they're glanceable only; tapping the home-screen SlyBrowser widget opens the browser.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
     }
 
