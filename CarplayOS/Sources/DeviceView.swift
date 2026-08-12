@@ -14,10 +14,10 @@ struct DeviceView: View {
                 }
 
                 Section("First-time pairing") {
-                    stepRow(1, "Power the mount from the car's USB/12V. Wait for its home screen.")
-                    stepRow(2, "iPhone: Settings → Bluetooth → pair with the CARLINK device when it appears.")
-                    stepRow(3, "It hands off to Wi-Fi automatically and CarPlay starts on the mount.")
-                    stepRow(4, "If it doesn't: Settings → Wi-Fi → join CARLINK-24FD40 with the default password, then retry.")
+                    StepRow(number: 1, text: "Power the mount from the car's USB/12V. Wait for its home screen.")
+                    StepRow(number: 2, text: "iPhone: Settings → Bluetooth → pair with the CARLINK device when it appears.")
+                    StepRow(number: 3, text: "It hands off to Wi-Fi automatically and CarPlay starts on the mount.")
+                    StepRow(number: 4, text: "If it doesn't: Settings → Wi-Fi → join CARLINK-24FD40 with the default password, then retry.")
                 }
 
                 Section("Device settings page") {
@@ -38,16 +38,6 @@ struct DeviceView: View {
                 }
             }
             .navigationTitle("Onn Mount")
-        }
-    }
-
-    private func stepRow(_ n: Int, _ text: String) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Text("\(n)")
-                .font(.caption.bold())
-                .frame(width: 22, height: 22)
-                .background(Circle().fill(Color.accentColor.opacity(0.2)))
-            Text(text).font(.subheadline)
         }
     }
 }

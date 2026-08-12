@@ -49,10 +49,10 @@ struct DashView: View {
     private var setupCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Show these in CarPlay").font(.headline)
-            step(1, "Connect the phone to your Onn CarPlay mount (Device tab has the steps).")
-            step(2, "On iPhone: Settings → General → CarPlay → your car.")
-            step(3, "Tap Widgets → Add Widgets → pick the carplayOS widgets.")
-            step(4, "Swipe to the widget screen on the car display.")
+            StepRow(number: 1, text: "Connect the phone to your Onn CarPlay mount (Device tab has the steps).")
+            StepRow(number: 2, text: "On iPhone: Settings → General → CarPlay → your car.")
+            StepRow(number: 3, text: "Tap Widgets → Add Widgets → pick the carplayOS widgets.")
+            StepRow(number: 4, text: "Swipe to the widget screen on the car display.")
             Button {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
@@ -66,16 +66,6 @@ struct DashView: View {
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
-    }
-
-    private func step(_ n: Int, _ text: String) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Text("\(n)")
-                .font(.caption.bold())
-                .frame(width: 22, height: 22)
-                .background(Circle().fill(Color.accentColor.opacity(0.2)))
-            Text(text).font(.subheadline)
-        }
     }
 }
 
