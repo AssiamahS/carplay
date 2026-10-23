@@ -1,5 +1,7 @@
 # carplayOS
 
+**Install:** open [assiamahs.github.io/carplay/install.html](https://assiamahs.github.io/carplay/install.html) in Safari on your iPhone.
+
 Widgets, browser, and device tools for wireless CarPlay screens (Onn dashcam mount / Carlink units).
 
 - **Widget pack** — Dash Clock, Day Progress, SlyBrowser quick-launch. iOS 26 pins small widgets to a dedicated CarPlay widget screen: Settings → General → CarPlay → your car → Widgets.
